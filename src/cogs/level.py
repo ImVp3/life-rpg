@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from database.db import get_user, exp_needed_for_level
+from utils.level_fomula import get_realm_name, get_realm_description
 import aiosqlite
 import os
 
@@ -25,46 +26,30 @@ class LevelCog(commands.Cog):
             await ctx.send("Bạn chưa đăng ký.")
             return
 
-        level = user[2]
-        exp = user[3]
+        level = user['level']
+        exp = user['exp']
         needed = int(100 * (1.5 ** (level - 1)))
         bar = create_progress_bar(exp, needed)
+        
+        # Lấy tên cảnh giới
+        realm_name = get_realm_name(level)
+        realm_desc = get_realm_description(level)
 
-        embed = discord.Embed(title="📈 Cấp độ & Tiến trình", color=0x9b59b6)
-        embed.add_field(name="Level", value=level)
-        embed.add_field(name="EXP", value=f"{exp}/{needed}\n📊 {bar}", inline=False)
-        embed.add_field(name="Điểm chưa phân phối", value=user[9])
+        embed = discord.Embed(title="📈 Cảnh Giới & Tiến Trình Tu Luyện", color=0x9b59b6)
+        embed.add_field(name="🏆 Cảnh Giới", value=f"{realm_name} (Level {level})")
+        embed.add_field(name="📖 Mô Tả", value=realm_desc, inline=False)
+        embed.add_field(name="🧬 Tu Vi", value=f"{exp}/{needed}\n📊 {bar}", inline=False)
         await ctx.send(embed=embed)
-    @commands.command(name="allocate")
-    async def allocate(self, ctx, stat: str, amount: int):
-        stat = stat.upper()
-        if stat not in ["INT", "STR", "SK"]:
-            await ctx.send("⚠️ Chỉ có thể phân phối vào INT, STR hoặc SK.")
-            return
 
-        async with aiosqlite.connect(DB_PATH) as db:
-            cursor = await db.execute("SELECT level_point FROM users WHERE user_id = ?", (ctx.author.id,))
-            row = await cursor.fetchone()
-            if not row or row[0] < amount:
-                await ctx.send("⚠️ Không đủ điểm để phân phối.")
-                return
-
-            await db.execute(f"""
-                UPDATE users
-                SET {stat.lower()}_stat = {stat.lower()}_stat + ?, level_point = level_point - ?
-                WHERE user_id = ?
-            """, (amount, amount, ctx.author.id))
-            await db.commit()
-
-        await ctx.send(f"✅ Đã cộng {amount} điểm vào **{stat}**.")
     @commands.command(name="level_list")
     async def level_list(self, ctx):
-        embed = discord.Embed(title="📊 Bảng EXP từng cấp (Level 1–10)", color=0x3498db)
+        embed = discord.Embed(title="📊 Bảng Tu Vi từng Cảnh Giới (Level 1–10)", color=0x3498db)
         description = ""
 
         for lvl in range(1, 11):
             exp = exp_needed_for_level(lvl)
-            description += f"🔹 Level {lvl}: `{exp}` EXP\n"
+            realm_name = get_realm_name(lvl)
+            description += f"🔹 {realm_name} (Level {lvl}): `{exp}` Tu Vi\n"
 
         embed.description = description
         await ctx.send(embed=embed)

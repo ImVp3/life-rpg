@@ -1,0 +1,11 @@
+[
+    {
+        "habit_id": "daily_TOEIC",
+        "name": "Học TOEIC mỗi ngày",
+        "stat_gain": "INT",
+        "base_exp": 50,
+        "base_int": 2,
+        "base_hp": 0,
+        "description": "Làm 1 Full Test TOEIC-LR hoặc 1 MiniTest TOEIC-LR + 1/2 Test TOEIC-SW"
+    }
+]

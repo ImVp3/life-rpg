@@ -3,21 +3,18 @@
         "id": "daily_checkin",
         "name": "Check-in hàng ngày",
         "type": "daily",
-        "exp": 50,
-        "gold": 10
+        "exp": 50
     },
     {
         "id": "read_paper",
         "name": "Đọc 1 bài báo khoa học",
         "type": "daily",
-        "exp": 60,
-        "gold": 15
+        "exp": 60
     },
     {
         "id": "weekly_exercise",
         "name": "Tập thể dục 3 lần",
         "type": "weekly",
-        "exp": 200,
-        "gold": 50
+        "exp": 200
     }
-    ]
+]
